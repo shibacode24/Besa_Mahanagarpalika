@@ -92,96 +92,149 @@ class NewServecontroller extends Controller
       
       $zone_id =   Auth::guard('operator')->user()->zone_id;
      
-      $serve_all1=NewServeForm::when($zone_id, function ($q) {
+      if (is_array(Auth::guard('operator')->user()->zone_id) && in_array('All', Auth::guard('operator')->user()->zone_id)) 
+      {
+        $serve_all1=NewServeForm::when($zone_id, function ($q) {
+          return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
+        })
+        ->paginate(10);
+    
+      $data=ExistingServe::when($zone_id, function ($q) {
         return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
       })
-     
       ->paginate(10);
-     // echo json_encode($serve_all1);
-      //exit();
-
-    $data=ExistingServe::when($zone_id, function ($q) {
-      return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-    })
-
-    ->paginate(10);
-    // echo json_encode($data);
-    // exit();
-
-    $all_survays = DB::table('serves')
+      }
+      else{
+        $serve_all1=NewServeForm::when($zone_id, function ($q) {
+          return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
+        })
+        ->paginate(10);
+    
+      $data=ExistingServe::when($zone_id, function ($q) {
+        return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
+      })
+      ->paginate(10);
+      }
+      
+   
+      if (is_array(Auth::guard('operator')->user()->zone_id) && in_array('All', Auth::guard('operator')->user()->zone_id)) 
+      {
+   $all_survays = DB::table('serves')
         ->select('*')
-        ->where('zone_no', Auth::guard('operator')->user()->zone_id)
+        // ->whereIn(Auth::guard('operator')->user()->zone_id,'zone_no')
         ->where(function ($query) use ($request) {
               $query->where('survey_app_no', 'like', '%' . $request->survey_app_no . '%');
               })
         ->unionAll(DB::table('existing_serves')
             ->select('*')
-            ->where('zone_no', Auth::guard('operator')->user()->zone_id)
+  
+        // ->whereIn(Auth::guard('operator')->user()->zone_id,'zone_no')
+
             ->where(function ($query) use ($request) {
                   $query->where('survey_app_no', 'like', '%' . $request->survey_app_no . '%');
                 })
         )
         ->orderBy('id', 'desc')
         ->paginate(100);
+              }
+              else{
+                 $all_survays = DB::table('serves')
+        ->select('*')
+        ->whereIn('zone_no', Auth::guard('operator')->user()->zone_id)
+        // ->whereIn(Auth::guard('operator')->user()->zone_id,'zone_no')
+        ->where(function ($query) use ($request) {
+              $query->where('survey_app_no', 'like', '%' . $request->survey_app_no . '%');
+              })
+        ->unionAll(DB::table('existing_serves')
+            ->select('*')
+            ->whereIn('zone_no', Auth::guard('operator')->user()->zone_id)
+        // ->whereIn(Auth::guard('operator')->user()->zone_id,'zone_no')
+
+            ->where(function ($query) use ($request) {
+                  $query->where('survey_app_no', 'like', '%' . $request->survey_app_no . '%');
+                })
+        )
+        ->orderBy('id', 'desc')
+        ->paginate(100);
+              }
+
+    //      echo json_encode($all_survays);
+    // exit();
         
       return view('ServeForm.show',compact('serve_all1','data','all_survays'));
    }
 
-   public function demand_notice()
+    public function demand_notice()
   {
-    $zone_id =   Auth::guard('operator')->user()->zone_id;
 
-    $new_notice=NewServeForm::when($zone_id, function ($q) {
-      return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-    })
-    ->where('generate_notice','1')
-    ->get();
-    //echo json_encode($new_notice);
-    //exit();
+    if (is_array(Auth::guard('operator')->user()->zone_id) && in_array('All', Auth::guard('operator')->user()->zone_id)) 
+        {
+          $new_notice=NewServeForm::where('generate_notice','1')
 
-  $exis_notice=ExistingServe::when($zone_id, function ($q) {
-    return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-  })
-  ->where('generate_notice','1')
-  ->get();
+          ->get();
+
+        $exis_notice=ExistingServe::where('generate_notice','1')
+        ->get();
+
+          $new_notice02=NewServeForm::where('generate_notice02','1')
+          ->where('paid_unpaid','unpaid')
+
+          ->get();
+          //echo json_encode($new_notice);
+          //exit();
+
+        $exis_notice02=ExistingServe::where('generate_notice02','1')
+        ->where('paid_unpaid','unpaid')
+        ->get();
+        
 
 
+        $new_notice03=NewServeForm::where('generate_notice03','1')
+        ->where('paid_unpaid02','unpaid')
+        ->get();
+        //echo json_encode($new_notice);
+        //exit();
 
-  //$zone_id =   Auth::guard('operator')->user()->zone_id;
+        $exis_notice03=ExistingServe::where('generate_notice03','1')
+        ->where('paid_unpaid02','unpaid')
+        ->get();
+        }
+        else{
+          $new_notice=NewServeForm::where('generate_notice','1')
+          ->whereIn('zone_no',Auth::guard('operator')->user()->zone_id)
+          ->get();
 
-    $new_notice02=NewServeForm::when($zone_id, function ($q) {
-      return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-    })
-    ->where('generate_notice02','1')
-    ->where('paid_unpaid','unpaid')
-    ->get();
-    //echo json_encode($new_notice);
-    //exit();
+        $exis_notice=ExistingServe::where('generate_notice','1')
+        ->whereIn('zone_no',Auth::guard('operator')->user()->zone_id)
+        ->get();
 
-  $exis_notice02=ExistingServe::when($zone_id, function ($q) {
-    return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-  })
-  ->where('generate_notice02','1')
-  ->where('paid_unpaid','unpaid')
-  ->get();
+          $new_notice02=NewServeForm::where('generate_notice02','1')
+          ->where('paid_unpaid','unpaid')
+          ->whereIn('zone_no',Auth::guard('operator')->user()->zone_id)
+          ->get();
+          //echo json_encode($new_notice);
+          //exit();
+
+        $exis_notice02=ExistingServe::where('generate_notice02','1')
+        ->where('paid_unpaid','unpaid')
+        ->whereIn('zone_no',Auth::guard('operator')->user()->zone_id)
+        ->get();
+        
+
+
+        $new_notice03=NewServeForm::where('generate_notice03','1')
+        ->where('paid_unpaid02','unpaid')
+        ->whereIn('zone_no',Auth::guard('operator')->user()->zone_id)
+        ->get();
+        //echo json_encode($new_notice);
+        //exit();
+
+        $exis_notice03=ExistingServe::where('generate_notice03','1')
+        ->where('paid_unpaid02','unpaid')
+        ->whereIn('zone_no',Auth::guard('operator')->user()->zone_id)
+        ->get();
+        }
    
-
-  
-  $new_notice03=NewServeForm::when($zone_id, function ($q) {
-    return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-  })
-  ->where('generate_notice03','1')
-  ->where('paid_unpaid02','unpaid')
-  ->get();
-  //echo json_encode($new_notice);
-  //exit();
-
-$exis_notice03=ExistingServe::when($zone_id, function ($q) {
-  return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-})
-->where('generate_notice03','1')
-->where('paid_unpaid02','unpaid')
-->get();
       // echo json_encode($exis_notice);
       // exit();
       return view('ServeForm.demand_notice',compact('new_notice','exis_notice','new_notice02','exis_notice02','new_notice03','exis_notice03'));
@@ -190,21 +243,27 @@ $exis_notice03=ExistingServe::when($zone_id, function ($q) {
 
   public function generate_certificate()
   {
-    $zone_id =   Auth::guard('operator')->user()->zone_id;
-
-    $new_generate_certificate=NewServeForm::when($zone_id, function ($q) {
-      return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-    })
-    ->where('status','1')
+    if (is_array(Auth::guard('operator')->user()->zone_id) && in_array('All', Auth::guard('operator')->user()->zone_id)) 
+    {
+      $new_generate_certificate=NewServeForm::where('status','1')
+      ->get();
+      //echo json_encode($new_notice);
+      //exit();
+  
+    $exis_generate_certificate=ExistingServe::where('status','1')
     ->get();
-    //echo json_encode($new_notice);
-    //exit();
-
-  $exis_generate_certificate=ExistingServe::when($zone_id, function ($q) {
-    return $q-> where('zone_no',Auth::guard('operator')->user()->zone_id);
-  })
-  ->where('status','1')
-  ->get();
+    }
+    else{
+      $new_generate_certificate=NewServeForm::where('status','1')
+      ->whereIn('zone_no',Auth::guard('operator')->user()->zone_id)
+      ->get();
+      //echo json_encode($new_notice);
+      //exit();
+  
+    $exis_generate_certificate=ExistingServe::where('status','1')
+    ->whereIn('zone_no',Auth::guard('operator')->user()->zone_id)
+    ->get();
+    }
    
       // echo json_encode($exis_notice);
       // exit();

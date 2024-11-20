@@ -10,7 +10,7 @@
 					<div class="card-body">
 						<div class="card-title d-flex align-items-center">
 
-							<h6 style="color:red;font-weight:bold">Zone Master</h6>
+							<h6 style="color:red;font-weight:bold">Ward Master</h6>
 						</div>
 						<hr>
 						<form class="row g-2" method="post" action="{{ route('zoneinsert') }}">
@@ -18,20 +18,20 @@
 
 							{{-- <div class="col-md-3"></div> --}}
 							<div class="col-md-2">
-								<label>Zone</label>
-								<input class="form-control from-text mb-3" type="text" placeholder="Zone" name="zone" required>
+								<label>Ward</label>
+								<input class="form-control from-text mb-3" type="text" placeholder="Ward" name="zone" required>
 								
 							</div>
 
 							<div class="col-md-2">
-								<label>Zone</label>
-								<input class="form-control to-text mb-3" type="text" placeholder="Zone" name="zone1" required>
+								<label>Ward</label>
+								<input class="form-control to-text mb-3" type="text" placeholder="Ward" name="zone1" required>
 								
 							</div>
 
 							<div class="col-md-3">
-								<label>Zone Name</label>
-								<input class="form-control to-text mb-3" type="text" placeholder="Zone" name="zone_name" required>
+								<label>Ward Name</label>
+								<input class="form-control to-text mb-3" type="text" placeholder="Ward" name="zone_name" required>
 								
 							</div>
 
@@ -63,9 +63,9 @@
 								<thead>
 									<tr>	
 										<th>Sr. No.</th>
-										<th>Zone</th>  
-										<th>Zone</th>  
-										<th>Zone Name</th>  
+										<th>Ward</th>  
+										<th>Ward</th>  
+										<th>Ward Name</th>  
 										<th>Action</th>
 									</tr>
 								</thead>

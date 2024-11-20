@@ -186,32 +186,35 @@
                                     <label class="form-label">Prabhag Name</label>
                                     <input class="form-control mb-3 from-text" type="text" placeholder="Prabhag Name"
                                         aria-label="default input example" name="prabhag_name"
-                                        value="{{ $edit_data->prabhag_name1 }}">
+                                        value="{{ $edit_data->prabhag_name }}">
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label"></label>
                                     <input class="form-control mb-3 to-text " type="text" placeholder="प्रभाग नाव"
                                         aria-label="default input example" style="margin-top:8px;" name="prabhag_name1"
-                                        value="{{ $edit_data->zone_no1 }}">
+                                        value="{{ $edit_data->prabhag_name1 }}">
                                 </div>
                                 {{-- <div class="col-md-6">
-                                    <label class="form-label">Zone No.</label>
-                                    <input class="form-control mb-3 from-text " type="text" placeholder="Zone No."
+                                    <label class="form-label">Wardabel>
+                                    <input class="form-control mb-3 from-text " type="text" placeholder="Ward
                                         aria-label="default input example" name="zone_no">
                                 </div> --}}
-                                <input type="hidden" id="change_zone"
-                                    value="{{ Auth::guard('operator')->user()->zone_id }}">
-                                <div class="col-md-3">
-                                    <label class="form-label">Zone No.</label>
-                                    <select class="form-select from-text mb-3" aria-label="Default select example"
+                                {{-- <input type="hidden" id="change_zone"
+                                    value="{{ Auth::guard('operator')->user()->zone_id }}"> --}}
+
+                                    <div class="col-md-3">
+                                        <label class="form-label">Ward</label>
+                                        <select class="form-select from-text mb-3" aria-label="Default select example"
                                         name="zone_no" id="zone_id">
-                                        <option value="">Select</option>
-                                        @foreach ($zone as $zone)
-                                            <option value="{{ $zone->id }}">{{ $zone->zone }}
+                                            <option value="">Select</option>
+                                            @foreach ($zone as $zone)
+                                            <option value="{{ $zone->id }}" @if ($edit_data->zone_no == $zone->id)
+                                                selected
+                                            @endif>{{ $zone->zone }}
                                             </option>
                                         @endforeach
-                                    </select>
-                                </div>
+                                        </select>
+                                    </div>
 
                                 <div class="col-md-3">
                                     <label class="form-label"></label>
@@ -306,10 +309,10 @@
                                         <option value="">Select</option>
                                         @foreach ($ty_bussiness as $ty_bussiness)
                                             <option value="{{ $ty_bussiness->id }}"
-                                                @if ($edit_data->type_of_bussiness_id == $ty_bussiness->id) selected @endif>{{ $ty_bussiness->id }}
+                                                @if ($edit_data->type_of_bussiness_id == $ty_bussiness->id) selected @endif>{{ $ty_bussiness->bussiness_type }}
                                             </option>
                                         @endforeach
-                                        <option value="Hotel" @if ($edit_data->type_of_bussiness_id == 'Hotel') selected @endif>47
+                                        <option value="Hotel" @if ($edit_data->type_of_bussiness_id == 'Hotel') selected @endif>
                                             Hotel/Lodging/Hostel</option>
 
                                     </select>
@@ -758,7 +761,7 @@
             $(document).ready(function() {
                 // alert(1);
 
-                $("#zone_id").val($("#change_zone").val());
+                $("#zone_id").val($("#zone_id").val());
                 setTimeout(() => {
                     $("#zone_id").change();
                 }, 1000);

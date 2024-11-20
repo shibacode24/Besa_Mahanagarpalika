@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('city',[ApiController::class,'city']);
+Route::get('cities',[ApiController::class,'cities']);
 
 Route::post('login',[ApiController::class,'login']);
 Route::post('survey',[ApiController::class,'survey']);

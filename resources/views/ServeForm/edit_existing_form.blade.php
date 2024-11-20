@@ -28,29 +28,17 @@
                                 @csrf
                                 <input type="hidden" name="id" value="{{ $edit_data->id }}">
 
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <label class="form-label">Application No.</label>
                                     <input class="form-control " type="number" placeholder="Application No."
                                         aria-label="default input example" name="survey_app_no" value="{{ $edit_data->survey_app_no }}" id="serve" required>
 
                                 </div>
-                                {{-- @json($data1) --}}
-                                <div class="col-md-2" style="margin-top:6vh;">
-                                    <div class="col">
-
-                                        <button type="button" id="search_button" class="btn btn-primary px-5"
-                                            style=" height: 40px;"> <i class='bx bx-search'
-                                                style="font-size: 110%; "></i></button>
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <img src="" value="" class="logo-icon" alt="logo icon"
-                                        style="height:100px; width: 200px;" id="photo">
-                                    <input type="hidden" name="photo" id="photo2">
-                                    {{-- <img src="{{ asset('images/serve_photo/' . $data1->photo) }}"
-                                            style="height:100px;width:auto;" alt=""> --}}
-                                            <img src="{{ asset('images/serve_photo/' . $edit_data->photo) }}"
-                                            style="height:100px;width:auto;" alt="">
+                              
+                                <div class="col-md-3">
+                                   
+                                            <img src="{{ asset('images/' . $edit_data->photo) }}"
+                                            style="height:100px;width:auto;" alt="img">
                                 </div>
 
                                 {{-- <div class="col-md-2">
@@ -168,19 +156,19 @@
                                         aria-label="default input example" style="margin-top:8px;" name="prabhag_name1" value="{{ $edit_data->zone_no1 }}">
                                 </div>
                                 {{-- <div class="col-md-6">
-                                    <label class="form-label">Zone No.</label>
-                                    <input class="form-control mb-3 from-text " type="text" placeholder="Zone No."
+                                    <label class="form-label">Ward</label>
+                                    <input class="form-control mb-3 from-text " type="text" placeholder="Ward."
                                         aria-label="default input example" name="zone_no">
                                 </div> --}}
-                                <input type="hidden" id="change_zone"
-                                    value="{{ Auth::guard('operator')->user()->zone_id }}">
-                                <div class="col-md-3">
-                                    <label class="form-label">Zone No.</label>
+                               <div class="col-md-3">
+                                    <label class="form-label">Ward</label>
                                     <select class="form-select from-text mb-3" aria-label="Default select example"
                                         name="zone_no" id="zone_id">
                                         <option value="">Select</option>
                                         @foreach ($zone as $zone)
-                                            <option value="{{ $zone->id }}">{{ $zone->zone }}
+                                            <option value="{{ $zone->id }}" @if ($edit_data->zone_no == $zone->id)
+                                                selected
+                                            @endif>{{ $zone->zone }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -267,10 +255,10 @@
                                         name="type_of_bussiness_id" id="bussiness">
                                         <option value="">Select</option>
                                         @foreach ($ty_bussiness as $ty_bussiness)
-                                            <option value="{{ $ty_bussiness->id }}"  @if ($edit_data->type_of_bussiness_id == $ty_bussiness->id) selected @endif>{{ $ty_bussiness->id }}
+                                            <option value="{{ $ty_bussiness->id }}"  @if ($edit_data->type_of_bussiness_id == $ty_bussiness->id) selected @endif>{{ $ty_bussiness->bussiness_type }}
                                             </option>
                                         @endforeach
-                                        <option value="Hotel" @if ($edit_data->type_of_bussiness_id == 'Hotel') selected @endif>47 Hotel/Lodging/Hostel</option>
+                                        <option value="Hotel" @if ($edit_data->type_of_bussiness_id == 'Hotel') selected @endif>Hotel/Lodging/Hostel</option>
 
                                     </select>
                                 </div>
@@ -702,12 +690,11 @@
     $(document).ready(function() {
         // alert(1);
         
-        $("#zone_id").val($("#change_zone").val());
-       setTimeout(() => {
-        $("#zone_id").change();
-       }, 1000); 
-        $("#zone_id").prop('disabled',true);
-
+        $("#zone_id").val($("#zone_id").val());
+                setTimeout(() => {
+                    $("#zone_id").change();
+                }, 1000);
+                $("#zone_id").prop('disabled', true);
 
         $("#form_id").on('submit', function() {
             //alert('submit');

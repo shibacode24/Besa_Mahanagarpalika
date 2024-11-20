@@ -11,7 +11,7 @@
 					<div class="card-body">
 						<div class="card-title d-flex align-items-center">
 
-							<h6 style="color:red;font-weight:bold">Zone Master</h6>
+							<h6 style="color:red;font-weight:bold">Ward Master</h6>
 						</div>
 						<hr>
 						<form class="row g-2" method="post" action="{{ route('zoneupdate') }}">
@@ -20,19 +20,19 @@
 
 							{{-- <div class="col-md-3"></div> --}}
 							<div class="col-md-2">
-								<label>zone</label>
-								<input class="form-control from-text mb-3" type="text" placeholder="zone" name="zone" value="{{ $edit_data->zone }}">
+								<label>Ward</label>
+								<input class="form-control from-text mb-3" type="text" placeholder="Ward" name="zone" value="{{ $edit_data->zone }}">
 								
 							</div>
 							<div class="col-md-2">
-								<label>Zone</label>
-								<input class="form-control to-text mb-3" type="text" placeholder="Zone" name="zone1" value="{{ $edit_data->zone1 }}" >
+								<label>Ward</label>
+								<input class="form-control to-text mb-3" type="text" placeholder="Ward" name="zone1" value="{{ $edit_data->zone1 }}" >
 								
 							</div>
 
 							<div class="col-md-2">
-								<label>Zone Name</label>
-								<input class="form-control to-text mb-3" type="text" placeholder="Zone" name="zone_name" value="{{ $edit_data->zone_name }}" >
+								<label>Ward Name</label>
+								<input class="form-control to-text mb-3" type="text" placeholder="Ward" name="zone_name" value="{{ $edit_data->zone_name }}" >
 								
 							</div>
 
@@ -63,9 +63,9 @@
 								<thead>
 									<tr>	
 										<th>Sr. No.</th>
-										<th>Zone</th>  
-										<th>Zone</th>  
-										<th>Zone Name</th>  
+										<th>Ward</th>  
+										<th>Ward</th>  
+										<th>Ward Name</th>  
 										<th>Action</th>
 									</tr>
 								</thead>

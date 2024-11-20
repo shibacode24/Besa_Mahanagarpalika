@@ -106,7 +106,7 @@
                                                             <th>Name of Establishment</th>
                                                             <th>Nature of Business</th>
                                                             <th>Area(sq. ft)</th>
-                                                            <th>Ward</th>
+                                                            <th>Zone</th>
                                                             <th>Amount</th>
                                                             <th>Receipt Date</th>
                                                             <th>MOP</th>

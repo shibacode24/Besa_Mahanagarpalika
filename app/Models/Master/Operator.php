@@ -21,4 +21,18 @@ class Operator extends Authenticatable
         'password'
 
     ];
+    protected $casts = [
+        'zone_id' => 'array',
+    ];
+
+    public function getZoneNamesAttribute()
+    {
+        // Check if zone_id is an array; if not, return an empty array to prevent errors
+        $zoneIds = is_array($this->zone_id) ? $this->zone_id : [];
+    
+        // Fetch and return zone names if there are valid zone IDs
+        return Zone::whereIn('id', $zoneIds)->pluck('zone')->toArray();
+    }
+
+    
 }

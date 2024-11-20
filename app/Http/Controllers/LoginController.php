@@ -20,7 +20,7 @@ class LoginController extends Controller
     public function login_submit(Request $request)
     {
       
-       if (auth()->attempt(array('username' => $request['username'], 'password' => $request['password'],'role' => '0'))) 
+       if (auth()->attempt(array('username' => $request['username'], 'password' => $request['password'],'role' => ['0','3']))) 
        { 
         // dd(1);
       // echo json_encode(Auth::user());

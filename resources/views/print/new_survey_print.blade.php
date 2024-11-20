@@ -79,7 +79,7 @@
   </tr>
   <tr>
     <td width="5%" align="center">4.6</td>
-    <td>Zone No.</td>
+    <td>Ward
    <td colspan="2">&nbsp;{{ $data->zone_no1 }}</td>
   </tr>
   <tr>
@@ -141,7 +141,7 @@
    <tr>
    			 <td width="10%" align="center">9</td>
             <td width="90%" colspan="3" style="background: rgb(242, 242, 242);" align="center">
-                <strong><span style="color:black;">Enter the Registration No. Whichever is Aplicable</span></strong></td>
+                <strong><span style="color:black;">Enter the Registration No. Whichever is Applicable</span></strong></td>
   </tr>
   <tr>
     <td width="5%" align="center">9.1</td>

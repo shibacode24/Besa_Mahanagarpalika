@@ -29,9 +29,9 @@
 									aria-label="default input example" name="mobile" required>
 							</div>
 							<div class="col-md-2">
-								<label class="form-label">zone</label>		
-								<select class="form-select mb-3" aria-label="Default select example" name="zone_id">
-									<option>Select</option>
+								<label class="form-label">Ward</label>		
+								<select class="multiple-select" data-placeholder="Choose anything" multiple="multiple" name="zone_id[]">
+									<option selected>All</option>
 									@foreach ($zone as $zone)
 									<option value="{{ $zone->id }}">{{ $zone->zone }}
 									</option>
@@ -39,6 +39,8 @@
 								</select>
 							</div>
 							
+						
+								
 							<div class="col-md-2">
 								<label class="form-label">UserName</label>								
 								<input class="form-control mb-3" type="text" placeholder="UserName"
@@ -77,7 +79,7 @@
 										<th>Name</th>  
 										<th>Email ID</th>
 										
-										<th>Zone No</th>
+										<th>Ward</th>
 										
 										<th>UserName</th>
 										<th style="background-color: #fff">Action</th>
@@ -89,7 +91,11 @@
 										<td>{{ $loop->index+1 }}</td>
 										<td> {{ $operator->name }}</td>	
 										<td> {{$operator->mobile}}</td>
-										<td> {{ $operator->zone }}</td>	
+										@if ($operator->zone_names == [])
+										<td>All</td>
+									@else
+										<td>{{ implode(', ', $operator->zone_names) }}</td>
+									@endif
 										<td>{{ $operator->username }}</td>
 										<td style="background-color: #fff">
 											<a href="{{ route('operatoredit',$operator->id) }}"><button type="button" class="btn1 btn-outline-success"><i class='bx bx-edit-alt me-0'></i></button></a>

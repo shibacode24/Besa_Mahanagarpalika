@@ -12,16 +12,16 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-center">
 
-                                <h6 style="color: red;font-weight:bold">Select Ward Wise</h6>
+                                <h6 style="color: red;font-weight:bold">Select Zone Wise</h6>
                             </div>
                             <hr>
                             <form class="row g-2" method="get" action="">
-                              
+                                @csrf
                                 <div class="col-md-3"></div>
                                 <div class="col-md-4">
                                     <label class="form-label">User</label>
                                     <select class="form-select mb-3" aria-label="Default select example" name="zone">
-                                        <option value="all">All Ward</option>
+                                        <option value="all">All Zone</option>
                                         @foreach ($zone as $zone)
                                             <option value="{{ $zone->id }}"
                                                 @if (app('request')->input('zone') == $zone->id) {{ 'selected' }} @endif>
@@ -65,7 +65,7 @@
                                         <div class="d-flex align-items-center">
                                             <div class="tab-icon"><i class='bx bx-file font-18 me-1'></i>
                                             </div>
-                                            <div class="tab-title">Generated Licenses</div>
+                                            <div class="tab-title">Generated Receipt</div>
                                         </div>
                                     </a>
                                 </li>
@@ -106,7 +106,7 @@
                                                             <th>Name of Establishment</th>
                                                             <th>Nature of Business</th>
                                                             <th>Area(Sq. Ft.)</th>
-                                                            <th>Ward</th>
+                                                            <th>Zone</th>
                                                             <th>Amount</th>
                                                             <th>Receipt Date</th>
                                                             <th>MOP</th>
@@ -155,16 +155,13 @@
                                                                     </a> --}}
 
 
-                                                                    @if ($serve_all->status == 1)
-                                                                    <a href="{{ route('new_certificate', $serve_all->id) }}"
+                                                                    <a href="{{ route('print-serve', $serve_all->id) }}"
                                                                         target="_blank"><button type="button"
-                                                                            class="btn1 btn-outline-success"><i
-                                                                                class="lni lni-certificate"
-                                                                                data-bs-toggle="tooltip"
-                                                                                data-bs-placement="top"
-                                                                                title="Certificate"></i></button>
+                                                                            class="btn1 btn-outline-secondary"
+                                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                            title="Receipt Print"><i
+                                                                                class='bx bx-receipt me-0'></i></button>
                                                                     </a>
-                                                                @endif
                                                                 </td>
 
                                                             </tr>
@@ -208,16 +205,15 @@
                                                                                 class='bx bx-wallet-alt me-0'></i></button>
                                                                     </a> --}}
 
-                                                                    @if ($data1->status == 1)
-                                                                    <a href="{{ route('existing_certificate', $data1->id) }}"
+
+                                                                    <a href="{{ route('print-serve1', $data1->id) }}"
                                                                         target="_blank"><button type="button"
-                                                                            class="btn1 btn-outline-success"><i
-                                                                                class="lni lni-certificate"
-                                                                                data-bs-toggle="tooltip"
-                                                                                data-bs-placement="top"
-                                                                                title="Certificate"></i></button>
+                                                                            class="btn1 btn-outline-secondary"
+                                                                            data-bs-toggle="tooltip"
+                                                                            data-bs-placement="top"
+                                                                            title="Receipt Print"><i
+                                                                                class='bx bx-receipt me-0'></i></button>
                                                                     </a>
-                                                                @endif
 
                                                                 </td>
 

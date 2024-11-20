@@ -55,12 +55,21 @@ class ExistingServeController extends Controller
       //   ->orderby('existing_serves.id','desc')
       //   ->get();
 
-        // echo json_encode($data1);
+        // echo json_encode(Auth::guard('operator')->user()->zone_id);
         // exit();
 
         $ty_licence=BussinessReg::all();
         $ty_bussiness=BussinessType::all();
-        $zone=Zone::all();
+        if (is_array(Auth::guard('operator')->user()->zone_id) && in_array("All", Auth::guard('operator')->user()->zone_id)) 
+        {
+          $zone=Zone::get();
+        
+        }
+        else{
+          $zone=Zone::whereIn('id',Auth::guard('operator')->user()->zone_id)->get();
+
+        }
+
         $business_type = Business_Type :: all();
         $document_type = Document :: all();
 // dd($document_type);
@@ -194,7 +203,7 @@ class ExistingServeController extends Controller
       $store->locality1=$request->get('locality1');
       $store->prabhag_name=$request->get('prabhag_name');
       $store->prabhag_name1=$request->get('prabhag_name1');
-      $store->zone_no=Auth::guard('operator')->user()->zone_id;
+      $store->zone_no=$request->get('zone_no');
       $store->zone_no1=$request->get('zone_no1');
       $store->pincode=$request->get('pincode');
       $store->pincode1=$request->get('pincode1');
@@ -348,17 +357,20 @@ foreach ($request->document_id as $index => $doc) {
             }
 
             
-    public function get_estab(Request $request)
+ public function get_estab(Request $request)
     {
       // dd($request->all());
-      $data=DB::table('existing_serves')
-      ->where([
-        'existing_serves.survey_app_no' =>$request->serve,
-        //   medicine_id=>$request->medicine,
-      ])
-      ->select('existing_serves.establishment','existing_serves.photo')->first();
+      $data = DB::table('existing_serves')
+    ->whereIn('existing_serves.zone_no', Auth::guard('operator')->user()->zone_id)
+    ->where('existing_serves.survey_app_no', $request->serve)
+    ->join('zone', 'zone.id', '=', 'existing_serves.zone_no')
+    ->select('existing_serves.establishment', 'existing_serves.photo', 'existing_serves.zone_no', 'zone.zone1')
+    ->first();
+
+
       return response()->json($data);
     }
+
 
 
 

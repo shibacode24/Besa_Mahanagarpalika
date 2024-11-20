@@ -38,7 +38,7 @@
 									aria-label="default input example" name="mobile" required>
 							</div>
 							<div class="col-md-2">
-								<label class="form-label">zone</label>		
+								<label class="form-label">ward</label>		
 								<select class="form-select mb-3" aria-label="Default select example" name="zone_id">
 									<option value="">Select</option>
 									@foreach ($zone as $zone)

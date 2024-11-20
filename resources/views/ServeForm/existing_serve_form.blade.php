@@ -167,21 +167,21 @@
                                         aria-label="default input example" style="margin-top:8px;" name="prabhag_name1">
                                 </div>
                                 {{-- <div class="col-md-6">
-                                    <label class="form-label">Zone No.</label>
-                                    <input class="form-control mb-3 from-text " type="text" placeholder="Zone No."
+                                    <label class="form-label">Wardabel>
+                                    <input class="form-control mb-3 from-text " type="text" placeholder="Ward
                                         aria-label="default input example" name="zone_no">
                                 </div> --}}
-                                <input type="hidden" id="change_zone"
-                                    value="{{ Auth::guard('operator')->user()->zone_id }}">
+                               
+                                
                                 <div class="col-md-3">
-                                    <label class="form-label">Zone No.</label>
+                                    <label class="form-label">Ward</label>
                                     <select class="form-select from-text mb-3" aria-label="Default select example"
-                                        name="zone_no" id="zone_id">
+                                    name="zone_no" id="zone_id">
                                         <option value="">Select</option>
                                         @foreach ($zone as $zone)
-                                            <option value="{{ $zone->id }}">{{ $zone->zone }}
-                                            </option>
-                                        @endforeach
+                                        <option value="{{ $zone->id }}">{{ $zone->zone }}
+                                        </option>
+                                    @endforeach
                                     </select>
                                 </div>
 
@@ -189,7 +189,7 @@
                                     <label class="form-label"></label>
                                     <input class="form-control mb-3 to-text " type="text" placeholder="झोन क्र."
                                         aria-label="default input example" style="margin-top:8px;" name="zone_no1"
-                                        id="zones_id" readonly>
+                                        id="zones_id" >
                                 </div>
 
                                 <div class="col-md-3">
@@ -259,14 +259,13 @@
                                         style="margin-top:8px;" name="bussiness_type1" id="bussiness_type1">
 
                                 </div>
-
                                 <div class="col-md-3">
                                     <label class="form-label">Nature Of Business</label>
                                     <select class="form-select from-text mb-3" aria-label="Default select example"
                                         name="type_of_bussiness_id" id="bussiness">
                                         <option value="">Select</option>
                                         @foreach ($ty_bussiness as $ty_bussiness)
-                                            <option value="{{ $ty_bussiness->id }}">{{ $ty_bussiness->id }}
+                                            <option value="{{ $ty_bussiness->id }}">{{ $ty_bussiness->bussiness_type }}
                                             </option>
                                         @endforeach
                                         <option value="Hotel">47 Hotel/Lodging/Hostel</option>
@@ -547,7 +546,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         const fromText = $(".from-text").val();
         //const toText = $(".to-text");
 
@@ -573,7 +572,54 @@
                 $(this).parent().next().find('.to-text').attr("placeholder", "Translation");
             });
         });
+    </script> --}}
+
+
+    <script>
+        const debounce = (func, delay) => {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        };
+    
+        $(document).on("keyup", ".from-text", debounce(function() {
+            console.clear();
+            let text = $(this).val(),
+                translateFrom = 'en-GB',
+                translateTo = 'mr-IN';
+
+            console.log("Text to translate:", text);
+            if (!text) return;
+    
+            let toTextField = $(this).parent().next().find('.to-text');
+            toTextField.attr("placeholder", "Translating...");
+    
+            // let apiKey = 'actual API key';  // Replace with your actual API key
+            // let apiUrl = `https://api.mymemory.translated.net/get?q=${text}&langpair=${translateFrom}|${translateTo}&key=${apiKey}`;
+
+
+            let apiUrl = `https://api.mymemory.translated.net/get?q=${text}&langpair=${translateFrom}|${translateTo}`;
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.responseData && data.responseData.translatedText) {
+                        toTextField.val(data.responseData.translatedText);
+                    } else {
+                        console.warn("Translation failed or invalid data returned:", data);
+                        toTextField.val("Translation error.");
+                    }
+                    toTextField.attr("placeholder", "Translation");
+                })
+                .catch(error => {
+                    console.error("Fetch error:", error);
+                    toTextField.val("Translation error.");
+                    toTextField.attr("placeholder", "Translation");
+                });
+        }, 500)); // Adjust debounce delay (500ms) as needed
     </script>
+
 
     <script>
         $(document).ready(function() {
@@ -697,13 +743,15 @@
                     data: {
 
                         serve: $("#serve").val(),
-
+                        zone_no: $("#zone_id").val(),
                     },
                     cache: false,
                     success: function(result) {
                         console.log(result);
                         $("#establishment").val(result.establishment);
                         $("#photo2").val(result.photo);
+                        $("#zone_id").val(result.zone_no);
+                        $("#zones_id").val(result.zone1);
                         $("#establishment").keyup();
                         // let base_url = '{{ asset('images/serve_photo/') }}'; //local link
                         let base_url = '{{ asset('images/') }}'; //server link
@@ -747,13 +795,6 @@
     </script>
     <script>
         $(document).ready(function() {
-
-
-            $("#zone_id").val($("#change_zone").val());
-            setTimeout(() => {
-                $("#zone_id").change();
-            }, 1000);
-            $("#zone_id").prop('disabled', true);
 
 
             $("#form_id").on('submit', function() {

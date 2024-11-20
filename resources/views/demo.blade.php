@@ -137,7 +137,7 @@
 					<th width="2%"></th>
 					<th width="3%">Prabhag Name</th>
 					<th width="2%"></th>
-					<th width="3%">Zone No</th>
+					<th width="3%">Ward</th>
 					<th width="2%"></th>
 				</tr>
 

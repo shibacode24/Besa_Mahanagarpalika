@@ -162,7 +162,7 @@
                  
                 <img src="{{ asset('images/logo/operator.png') }}" alt="user avatar" style="width: 25px;height:25px;">
                     <button class="dropbtn">
-                        {{ $zone }}
+                      {{Auth::guard('operator')->user()->name}}
                         <i class="fa fa-caret-down"></i>
                     </button>
                     <div class="dropdown1-content">

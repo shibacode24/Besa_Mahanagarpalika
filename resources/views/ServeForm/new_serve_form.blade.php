@@ -130,15 +130,15 @@
                                         aria-label="default input example" style="margin-top:8px;" name="prabhag_name1">
                                 </div>
                                 {{-- <div class="col-md-6">
-                                    <label class="form-label">Zone No.</label>
-                                    <input class="form-control from-text mb-3" type="text" placeholder="Zone No."
+                                    <label class="form-label">Wardabel>
+                                    <input class="form-control from-text mb-3" type="text" placeholder="Ward
                                         aria-label="default input example" name="zone_no">
                                 </div> --}}
 
 {{-- @json(Auth::guard('operator')->user())  --}}
 <input type="hidden" id="change_zone" value="{{Auth::guard('operator')->user()->zone_id}}">
                                 <div class="col-md-6">
-                                    <label class="form-label">Zone No.</label>
+                                    <label class="form-label">Wardabel>
                                     <select class="form-select from-text mb-3" aria-label="Default select example"
                                         name="zone_no" id="zone_id">
                                         <option value="">Select</option>

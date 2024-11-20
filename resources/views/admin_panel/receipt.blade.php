@@ -12,16 +12,16 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-center">
 
-                                <h6 style="color: red;font-weight:bold">Select Zone Wise</h6>
+                                <h6 style="color: red;font-weight:bold">Select Ward Wise</h6>
                             </div>
                             <hr>
                             <form class="row g-2" method="get" action="">
-                                @csrf
+                               
                                 <div class="col-md-3"></div>
                                 <div class="col-md-4">
                                     <label class="form-label">User</label>
                                     <select class="form-select mb-3" aria-label="Default select example" name="zone">
-                                        <option value="all">All Zone</option>
+                                        <option value="all">All Ward</option>
                                         @foreach ($zone as $zone)
                                             <option value="{{ $zone->id }}"
                                                 @if (app('request')->input('zone') == $zone->id) {{ 'selected' }} @endif>
@@ -106,7 +106,7 @@
                                                             <th>Name of Establishment</th>
                                                             <th>Nature of Business</th>
                                                             <th>Area(Sq. Ft.)</th>
-                                                            <th>Zone</th>
+                                                            <th>Ward</th>
                                                             <th>Amount</th>
                                                             <th>Receipt Date</th>
                                                             <th>MOP</th>

@@ -16,8 +16,10 @@ use App\Models\Master\BussinessType;
 use App\Models\Master\Business_Type;
 use App\Models\Master\Document;
 
+
 class ApiController extends Controller
 {
+
     public function login(Request $request)
     {
 		  //User::find(1)->update(['password'=>Hash::make(1111)]);

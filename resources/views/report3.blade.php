@@ -69,10 +69,31 @@
                                         <div class="d-flex align-items-center">
                                             <div class="tab-icon"><i class='bx bx-file font-18 me-1'></i>
                                             </div>
-                                            <div class="tab-title">Report 2</div>
+                                            <div class="tab-title">Report 1</div>
                                         </div>
                                     </a>
                                 </li>
+                                {{-- <li class="nav-item" role="presentation">
+										<a class="nav-link" data-bs-toggle="tab" href="#primaryprofile" role="tab"
+											aria-selected="false">
+											<div class="d-flex align-items-center">
+												<div class="tab-icon"><i class='bx bx-file font-18 me-1'></i>
+												</div>
+												<div class="tab-title">2 Notice</div>
+											</div>
+										</a>
+									</li> --}}
+
+                                    {{-- <li class="nav-item" role="presentation">
+										<a class="nav-link" data-bs-toggle="tab" href="#primaryprofile" role="tab"
+											aria-selected="false">
+											<div class="d-flex align-items-center">
+												<div class="tab-icon"><i class='bx bx-file font-18 me-1'></i>
+												</div>
+												<div class="tab-title">3 Notice</div>
+											</div>
+										</a>
+									</li> --}}
 
                             </ul>
                             <div class="tab-content py-3">
@@ -90,10 +111,6 @@
                                                             <th>Nature Of Business</th>
                                                             <th>Mobile No.</th>
                                                             <th>Address</th>
-                                                            <th>No Of Year</th>
-                                                            <th>Receipt Amount</th>
-                                                            <th>Ward</th>
-                                                            <th>Date Of Receipt</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -102,7 +119,7 @@
                                                                <td>{{ $serve_all->survey_app_no }}</td>
 																<td>{{ $serve_all->establishment }}</td>
                                                                 <td>{{ $serve_all->bussiness_name }}</td>
-																	<td>{{ $serve_all->wht_app_no }}</td>
+																<td>{{ $serve_all->wht_app_no }}</td>
                                                                 <td>{{ $serve_all->locality }}</td>
                                                                 <td>{{ $serve_all->certificate_year }}</td>
                                                                 <td>{{ $serve_all->pay_amount }}</td>

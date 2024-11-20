@@ -12,16 +12,16 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-center">
 
-                                <h6 style="color: red;font-weight:bold">Select Ward Wise</h6>
+                                <h6 style="color: red;font-weight:bold">Select Zone Wise</h6>
                             </div>
                             <hr>
                             <form class="row g-2" method="get" action="">
-                              
+
                                 <div class="col-md-3"></div>
                                 <div class="col-md-4">
                                     <label class="form-label">User</label>
                                     <select class="form-select mb-3" aria-label="Default select example" name="zone">
-                                        <option value="all">All Ward</option>
+                                        <option value="all">All Zone</option>
                                         @foreach ($zone as $zone)
                                             <option value="{{ $zone->id }}"
                                                 @if (app('request')->input('zone') == $zone->id) {{ 'selected' }} @endif>
@@ -65,7 +65,7 @@
                                         <div class="d-flex align-items-center">
                                             <div class="tab-icon"><i class='bx bx-file font-18 me-1'></i>
                                             </div>
-                                            <div class="tab-title">Generated Licenses</div>
+                                            <div class="tab-title">Collected Fee </div>
                                         </div>
                                     </a>
                                 </li>
@@ -98,7 +98,7 @@
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="table-responsive">
-                                                <table id="example" class="table table-striped table-bordered">
+                                                <table id="example2" class="table table-striped table-bordered">
                                                     <thead>
                                                         <tr>
                                                             {{-- <th>Sr. No.</th> --}}
@@ -106,12 +106,12 @@
                                                             <th>Name of Establishment</th>
                                                             <th>Nature of Business</th>
                                                             <th>Area(Sq. Ft.)</th>
-                                                            <th>Ward</th>
+                                                            <th>Zone</th>
                                                             <th>Amount</th>
-                                                            <th>Receipt Date</th>
+                                                            {{-- <th>Receipt Date</th>
                                                             <th>MOP</th>
-                                                            <th>Receipt No</th>
-                                                            <th style="background-color: #fff">Action</th>
+                                                            <th>Receipt No</th> --}}
+                                                            {{-- <th style="background-color: #fff">Action</th> --}}
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -141,32 +141,9 @@
                                                                 <td>{{ $serve_all->area_of_bussiness }}</td>
                                                                 <td>{{ $serve_all->zone }}</td>
                                                                 <td>{{ $serve_all->pay_amount }}</td>
-                                                                <td>{{ date('d-m-Y', strtotime($serve_all->date)) }}</td>
+                                                                {{-- <td>{{ date('d-m-Y', strtotime($serve_all->date)) }}</td>
                                                                 <td>{{ $serve_all->payment_mode }}</td>
-                                                                <td>{{ $serve_all->receipt_no }}</td>
-                                                                <td style="background-color: #fff">
-
-
-                                                                    {{-- <a href="{{ route('edit_new_payment', $serve_all->id) }}"
-                                                                        ><button type="button"
-                                                                            class="btn1 btn-outline-primary" data-bs-toggle="tooltip"
-                                                                            data-bs-placement="top" title="Edit Receipt"><i
-                                                                                class='bx bx-wallet-alt me-0'></i></button>
-                                                                    </a> --}}
-
-
-                                                                    @if ($serve_all->status == 1)
-                                                                    <a href="{{ route('new_certificate', $serve_all->id) }}"
-                                                                        target="_blank"><button type="button"
-                                                                            class="btn1 btn-outline-success"><i
-                                                                                class="lni lni-certificate"
-                                                                                data-bs-toggle="tooltip"
-                                                                                data-bs-placement="top"
-                                                                                title="Certificate"></i></button>
-                                                                    </a>
-                                                                @endif
-                                                                </td>
-
+                                                                <td>{{ $serve_all->receipt_no }}</td> --}}
                                                             </tr>
                                                         @endforeach
                                                         @foreach ($data as $data1)
@@ -196,30 +173,9 @@
                                                                 <td>{{ $data1->zone }}</td>
 
                                                                 <td>{{ $data1->pay_amount }}</td>
-                                                                <td>{{ date('d-m-Y', strtotime($data1->date)) }}</td>
+                                                                {{-- <td>{{ date('d-m-Y', strtotime($data1->date)) }}</td>
                                                                 <td>{{ $data1->payment_mode }}</td>
-                                                                <td>{{ $data1->receipt_no }}</td>
-                                                                <td style="background-color: #fff">
-
-
-                                                                    {{-- <a href="{{ route('edit_existing_payment', $data1->id) }}"><button type="button"
-                                                                            class="btn1 btn-outline-primary" data-bs-toggle="tooltip"
-                                                                            data-bs-placement="top" title="Edit Receipt"><i
-                                                                                class='bx bx-wallet-alt me-0'></i></button>
-                                                                    </a> --}}
-
-                                                                    @if ($data1->status == 1)
-                                                                    <a href="{{ route('existing_certificate', $data1->id) }}"
-                                                                        target="_blank"><button type="button"
-                                                                            class="btn1 btn-outline-success"><i
-                                                                                class="lni lni-certificate"
-                                                                                data-bs-toggle="tooltip"
-                                                                                data-bs-placement="top"
-                                                                                title="Certificate"></i></button>
-                                                                    </a>
-                                                                @endif
-
-                                                                </td>
+                                                                <td>{{ $data1->receipt_no }}</td> --}}
 
                                                             </tr>
                                                         @endforeach

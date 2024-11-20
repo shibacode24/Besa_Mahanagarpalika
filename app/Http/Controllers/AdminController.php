@@ -52,6 +52,8 @@ $serve_all1 = $serve_all1->when($role == '1', function ($q)  use ($zone_id) {
   return $q->where('zone_no',$zone_id);
   })
  ->where('paid_unpaid','paid')
+     ->orwhere('paid_unpaid02','paid')
+      ->orwhere('paid_unpaid02','paid')
  ->leftjoin('bussiness_types','bussiness_types.id','=','serves.type_of_bussiness_id')
  ->leftjoin('hotel_charges','hotel_charges.hotel_id','=','serves.type_of_bussiness_id')
  ->join('zone','zone.id','=','serves.zone_no')
@@ -75,6 +77,8 @@ $data = DB::table('existing_serves')->select('*');
         return $q->where('zone_no',$zone_id);
       })
       ->where('paid_unpaid','paid')
+      ->orwhere('paid_unpaid02','paid')
+      ->orwhere('paid_unpaid02','paid')
     ->join('zone','zone.id','=','existing_serves.zone_no')
     ->leftjoin('bussiness_types','bussiness_types.id','=','existing_serves.type_of_bussiness_id')
     ->leftjoin('hotel_charges','hotel_charges.hotel_id','=','existing_serves.type_of_bussiness_id')
@@ -681,800 +685,160 @@ public function update_existing_payment(Request $request)
 public function barchart(Request $request)
 {    	
 
-  //zone 1
+     $zones = DB::table('zone')->get(); 
+          $demandData = []; 
+          foreach ($zones as $zone) {
+              // Calculate demand for 'serves' table
+              $demand1 = DB::table('serves')
+                  ->join('bussiness_types', 'bussiness_types.id', '=', 'serves.type_of_bussiness_id')
+                  ->where('zone_no', $zone->id)
+                  ->sum('bussiness_types.charges');
 
-  $demand1 = DB::table('serves')
-  ->join('bussiness_types','bussiness_types.id','=','serves.type_of_bussiness_id')
-  ->where('zone_no',3)
-  ->sum('bussiness_types.charges');
-  
+              // Calculate demand for 'existing_serves' table
+              $demand2 = DB::table('existing_serves')
+                  ->join('bussiness_types', 'bussiness_types.id', '=', 'existing_serves.type_of_bussiness_id')
+                  ->where('zone_no', $zone->id)
+                  ->sum('bussiness_types.charges');
 
-$demand2 = DB::table('existing_serves')
-->join('bussiness_types','bussiness_types.id','=','existing_serves.type_of_bussiness_id')
-  ->where('zone_no',3)
-  ->sum('bussiness_types.charges');
-
-   $zone1_demand = $demand1 + $demand2;
-
-  //  echo json_encode($zone1_demand);
-
-  $survey1 = DB::table('existing_serves')
-  ->where('zone_no',3)
-  ->count();
+              // Store the total demand for the current zone
+              $demandData[$zone->zone] = $demand1 + $demand2;
+          }
 
 
-  $application1 = DB::table('existing_serves')
-  ->where('zone_no',3)
-  ->count();
-
-  $application2 = DB::table('serves')
-  ->where('zone_no',3)
-  ->count();
-
-  $zone1_application = $application1 + $application2;
-
-  $license1 = DB::table('existing_serves')
-  ->where('status','1')
-  ->where('zone_no',3)
-  ->count();
-
-  $license2 = DB::table('serves')
-  ->where('status','1')
-  ->where('zone_no',3)
-  ->count();
-
- $zone1_license = $license1 + $license2;
-
-
- $generate_notice1 = DB::table('existing_serves')
-  ->where('generate_notice','1')
-  ->where('zone_no',3)
-  ->count();
-
-$generate_notice2 = DB::table('serves')
-    ->where('generate_notice','1')
-    ->where('zone_no',3)
-    ->count();
-
-  $zone1_generate_notice = $generate_notice1 + $generate_notice2;
-
- $unpaid1 = DB::table('existing_serves')
-    ->where('paid_unpaid','unpaid')
-    ->where('zone_no',3)
-    ->count();
-
-                    
-$unpaid2 = DB::table('serves')
-      ->where('paid_unpaid','unpaid')
-      ->where('zone_no',3)
-        ->count();
-$zone1_unpaid = $unpaid1 + $unpaid2;
-
-
-$receipt1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->where('zone_no',3)
-		->count();
-
-	$receipt2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->where('zone_no',3)
-		->count();
-
-    $zone1_receipt = $receipt1 + $receipt2;
-
-    $todays_receipt1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',3)
-		->count();
-
-    $todays_receipt2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',3)
-		->count();
-
-    $zone1_todays_receipt = $todays_receipt1 + $todays_receipt2;
-	
-	$todays_payment1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',3)
-		->sum('pay_amount');
-
-    $todays_payment2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',3)
-		->sum('pay_amount');
-
-    $zone1_payment_receipt = $todays_payment1 + $todays_payment2;
-
-    $payment1 = DB::table('serves')
-		//->where('paid_unpaid','paid')
-    ->where('zone_no',3)
-		->sum('pay_amount');
-
-	$payment2 = DB::table('existing_serves')
-	//	->where('paid_unpaid','paid')
-    ->where('zone_no',3)
-		->sum('pay_amount');
-
-    $zone1_payment = $payment1 + $payment2;
-
-    $today1 = DB::table('serves')->select(DB::raw('*'))
-                  ->whereRaw('Date(created_at) = CURDATE()')
-                  ->where('zone_no',3)
+          $applicationData = []; 
+          foreach ($zones as $zone) {
+              // Calculate demand for 'serves' table
+              $application1 = DB::table('serves')
+                  ->where('zone_no', $zone->id)
                   ->count();
 
-    $today2 = DB::table('existing_serves')->select(DB::raw('*'))
-                  ->whereRaw('Date(created_at) = CURDATE()')
-                  ->where('zone_no',3)
-                  ->count();
-    $zone1_today = $today1 + $today2;
-
-     //zone 2
-
-     $demand1 = DB::table('serves')
-     ->join('bussiness_types','bussiness_types.id','=','serves.type_of_bussiness_id')
-     ->where('zone_no',4)
-     ->sum('bussiness_types.charges');
-     
-   
-   $demand2 = DB::table('existing_serves')
-   ->join('bussiness_types','bussiness_types.id','=','existing_serves.type_of_bussiness_id')
-     ->where('zone_no',4)
-     ->sum('bussiness_types.charges');
-   
-      $zone2_demand = $demand1 + $demand2;
-
-     $survey2 = DB::table('existing_serves')
-     ->where('zone_no',4)
-     ->count();
-
-  $application1 = DB::table('existing_serves')
-  ->where('zone_no',4)
-  ->count();
-
-  $application2 = DB::table('serves')
-  ->where('zone_no',4)
-  ->count();
-
-  $zone2_application = $application1 + $application2;
-
-  $license1 = DB::table('existing_serves')
-  ->where('status','1')
-  ->where('zone_no',4)
-  ->count();
-
-  $license2 = DB::table('serves')
-  ->where('status','1')
-  ->where('zone_no',4)
-  ->count();
-
- $zone2_license = $license1 + $license2;
-
-
- $generate_notice1 = DB::table('existing_serves')
-  ->where('generate_notice','1')
-  ->where('zone_no',4)
-  ->count();
-
-$generate_notice2 = DB::table('serves')
-    ->where('generate_notice','1')
-    ->where('zone_no',4)
-    ->count();
-
-  $zone2_generate_notice = $generate_notice1 + $generate_notice2;
-
- $unpaid1 = DB::table('existing_serves')
-    ->where('paid_unpaid','unpaid')
-    ->where('zone_no',4)
-    ->count();
-
-                    
-$unpaid2 = DB::table('serves')
-      ->where('paid_unpaid','unpaid')
-      ->where('zone_no',4)
-        ->count();
-$zone2_unpaid = $unpaid1 + $unpaid2;
-
-
-$receipt1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->where('zone_no',4)
-		->count();
-
-	$receipt2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->where('zone_no',4)
-		->count();
-
-    $zone2_receipt = $receipt1 + $receipt2;
-
-    $todays_receipt1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',4)
-		->count();
-
-    $todays_receipt2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',4)
-		->count();
-
-    $zone2_todays_receipt = $todays_receipt1 + $todays_receipt2;
-	
-$todays_payment1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',4)
-		->sum('pay_amount');
-
-    $todays_payment2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',4)
-		->sum('pay_amount');
-
-    $zone2_payment_receipt = $todays_payment1 + $todays_payment2;
-
-    // echo json_encode($zone2_todays_receipt);
-    // exit();
-
-    $payment1 = DB::table('serves')
-    ->where('zone_no',4)
-		->sum('pay_amount');
-
-	 $payment2 = DB::table('existing_serves')
-    ->where('zone_no',4)
-		->sum('pay_amount');
-
-    $zone2_payment = $payment1 + $payment2;
-
-    // $today1 = DB::table('serves')
-    // ->where((DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as formatted_dob')), '=', Carbon::now()->format('Y-m-d'))
-   // ->where('zone_no',4)
-		// ->count();
-
-	// $today2 = DB::table('existing_serves')
-  // ->where('created_at', '=', Carbon::now()->format('Y-m-d'))
-  //   ->where('zone_no',4)
-	// 	->count();
-
-
-    $today1 = DB::table('serves')->select(DB::raw('*'))
-                  ->whereRaw('Date(created_at) = CURDATE()')
-                  ->where('zone_no',4)
+              // Calculate demand for 'existing_serves' table
+              $application2 = DB::table('existing_serves')
+                  ->where('zone_no', $zone->id)
                   ->count();
 
-    $today2 = DB::table('existing_serves')->select(DB::raw('*'))
-                  ->whereRaw('Date(created_at) = CURDATE()')
-                  ->where('zone_no',4)
+              // Store the total demand for the current zone
+              $applicationData[$zone->zone] = $application1 + $application2;
+          }
+
+
+          $noticeData = []; 
+          foreach ($zones as $zone) {
+              // Calculate demand for 'serves' table
+              $notice1 = DB::table('serves')
+                  ->where('generate_notice','1')
+                  ->where('zone_no', $zone->id)
                   ->count();
 
-
-    $zone2_today = $today1 + $today2;
-
-    //zone 3
-
-    $demand1 = DB::table('serves')
-    ->join('bussiness_types','bussiness_types.id','=','serves.type_of_bussiness_id')
-    ->where('zone_no',5)
-    ->sum('bussiness_types.charges');
-    
-  
-  $demand2 = DB::table('existing_serves')
-  ->join('bussiness_types','bussiness_types.id','=','existing_serves.type_of_bussiness_id')
-    ->where('zone_no',5)
-    ->sum('bussiness_types.charges');
-  
-     $zone3_demand = $demand1 + $demand2;
-
-    $survey3 = DB::table('existing_serves')
-    ->where('zone_no',5)
-    ->count();
-
-    $application1 = DB::table('existing_serves')
-    ->where('zone_no',5)
-    ->count();
-  
-    $application2 = DB::table('serves')
-    ->where('zone_no',5)
-    ->count();
-  
-    $zone3_application = $application1 + $application2;
-  
-    $license1 = DB::table('existing_serves')
-    ->where('status','1')
-    ->where('zone_no',5)
-    ->count();
-  
-    $license2 = DB::table('serves')
-    ->where('status','1')
-    ->where('zone_no',5)
-    ->count();
-  
-   $zone3_license = $license1 + $license2;
-  
-  
-   $generate_notice1 = DB::table('existing_serves')
-    ->where('generate_notice','1')
-    ->where('zone_no',5)
-    ->count();
-  
-  $generate_notice2 = DB::table('serves')
-      ->where('generate_notice','1')
-      ->where('zone_no',5)
-      ->count();
-  
-    $zone3_generate_notice = $generate_notice1 + $generate_notice2;
-  
-   $unpaid1 = DB::table('existing_serves')
-      ->where('paid_unpaid','unpaid')
-      ->where('zone_no',5)
-      ->count();
-  
-                      
-  $unpaid2 = DB::table('serves')
-        ->where('paid_unpaid','unpaid')
-        ->where('zone_no',5)
-          ->count();
-  $zone3_unpaid = $unpaid1 + $unpaid2;
-  
-  
-  $receipt1 = DB::table('serves')
-      ->where('paid_unpaid','paid')
-      ->where('zone_no',5)
-      ->count();
-  
-    $receipt2 = DB::table('existing_serves')
-      ->where('paid_unpaid','paid')
-      ->where('zone_no',5)
-      ->count();
-  
-      $zone3_receipt = $receipt1 + $receipt2;
-
-      $todays_receipt1 = DB::table('serves')
-      ->where('paid_unpaid','paid')
-      ->whereRaw('Date(date) = CURDATE()')
-      ->where('zone_no',5)
-      ->count();
-  
-      $todays_receipt2 = DB::table('existing_serves')
-      ->where('paid_unpaid','paid')
-      ->whereRaw('Date(date) = CURDATE()')
-      ->where('zone_no',5)
-      ->count();
-  
-      $zone3_todays_receipt = $todays_receipt1 + $todays_receipt2;
-	
-	$todays_payment1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',5)
-		->sum('pay_amount');
-
-    $todays_payment2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',5)
-		->sum('pay_amount');
-
-    $zone3_payment_receipt = $todays_payment1 + $todays_payment2;
-
-      $payment1 = DB::table('serves')
-      ->where('zone_no',5)
-      ->sum('pay_amount');
-  
-     $payment2 = DB::table('existing_serves')
-      ->where('zone_no',5)
-      ->sum('pay_amount');
-  
-      $zone3_payment = $payment1 + $payment2;
-  
-      $today1 = DB::table('serves')->select(DB::raw('*'))
-      ->whereRaw('Date(created_at) = CURDATE()')
-      ->where('zone_no',5)
-      ->count();
-
-$today2 = DB::table('existing_serves')->select(DB::raw('*'))
-      ->whereRaw('Date(created_at) = CURDATE()')
-      ->where('zone_no',5)
-      ->count();
-  
-      $zone3_today = $today1 + $today2;
-
-//zone 4
-
-$demand1 = DB::table('serves')
-->join('bussiness_types','bussiness_types.id','=','serves.type_of_bussiness_id')
-->where('zone_no',6)
-->sum('bussiness_types.charges');
-
-
-$demand2 = DB::table('existing_serves')
-->join('bussiness_types','bussiness_types.id','=','existing_serves.type_of_bussiness_id')
-->where('zone_no',6)
-->sum('bussiness_types.charges');
-
- $zone4_demand = $demand1 + $demand2;
-
-$survey4 = DB::table('existing_serves')
-      ->where('zone_no',6)
-      ->count();
-
-      $application1 = DB::table('existing_serves')
-      ->where('zone_no',6)
-      ->count();
-    
-      $application2 = DB::table('serves')
-      ->where('zone_no',6)
-      ->count();
-    
-      $zone4_application = $application1 + $application2;
-    
-      $license1 = DB::table('existing_serves')
-      ->where('status','1')
-      ->where('zone_no',6)
-      ->count();
-    
-      $license2 = DB::table('serves')
-      ->where('status','1')
-      ->where('zone_no',6)
-      ->count();
-    
-     $zone4_license = $license1 + $license2;
-    
-    
-     $generate_notice1 = DB::table('existing_serves')
-      ->where('generate_notice','1')
-      ->where('zone_no',6)
-      ->count();
-    
-    $generate_notice2 = DB::table('serves')
-        ->where('generate_notice','1')
-        ->where('zone_no',6)
-        ->count();
-    
-      $zone4_generate_notice = $generate_notice1 + $generate_notice2;
-    
-     $unpaid1 = DB::table('existing_serves')
-        ->where('paid_unpaid','unpaid')
-        ->where('zone_no',6)
-        ->count();
-    
-                        
-    $unpaid2 = DB::table('serves')
-          ->where('paid_unpaid','unpaid')
-          ->where('zone_no',6)
-            ->count();
-    $zone4_unpaid = $unpaid1 + $unpaid2;
-    
-    
-    $receipt1 = DB::table('serves')
-        ->where('paid_unpaid','paid')
-        ->where('zone_no',6)
-        ->count();
-    
-      $receipt2 = DB::table('existing_serves')
-        ->where('paid_unpaid','paid')
-        ->where('zone_no',6)
-        ->count();
-    
-        $zone4_receipt = $receipt1 + $receipt2;
-
-        $todays_receipt1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',6)
-		->count();
-
-    $todays_receipt2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',6)
-		->count();
-
-    $zone4_todays_receipt = $todays_receipt1 + $todays_receipt2;
-	
-	$todays_payment1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',6)
-		->sum('pay_amount');
-
-    $todays_payment2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',6)
-		->sum('pay_amount');
-
-    $zone4_payment_receipt = $todays_payment1 + $todays_payment2;
-
-        $payment1 = DB::table('serves')
-    ->where('zone_no',6)
-		->sum('pay_amount');
-
-	 $payment2 = DB::table('existing_serves')
-    ->where('zone_no',6)
-		->sum('pay_amount');
-
-    $zone4_payment = $payment1 + $payment2;
-
-    $today1 = DB::table('serves')->select(DB::raw('*'))
-    ->whereRaw('Date(created_at) = CURDATE()')
-    ->where('zone_no',6)
-    ->count();
-
-$today2 = DB::table('existing_serves')->select(DB::raw('*'))
-    ->whereRaw('Date(created_at) = CURDATE()')
-    ->where('zone_no',6)
-    ->count();
-
-    $zone4_today = $today1 + $today2;
-
-//zone 5
-
-$demand1 = DB::table('serves')
-->join('bussiness_types','bussiness_types.id','=','serves.type_of_bussiness_id')
-->where('zone_no',7)
-->sum('bussiness_types.charges');
-
-
-$demand2 = DB::table('existing_serves')
-->join('bussiness_types','bussiness_types.id','=','existing_serves.type_of_bussiness_id')
-->where('zone_no',7)
-->sum('bussiness_types.charges');
-
- $zone5_demand = $demand1 + $demand2;
-        $survey5 = DB::table('existing_serves')
-           ->where('zone_no',7)
-           ->count();
-
-        $application1 = DB::table('existing_serves')
-        ->where('zone_no',7)
-        ->count();
-      
-        $application2 = DB::table('serves')
-        ->where('zone_no',7)
-        ->count();
-      
-        $zone5_application = $application1 + $application2;
-      
-        $license1 = DB::table('existing_serves')
-        ->where('status','1')
-        ->where('zone_no',7)
-        ->count();
-      
-        $license2 = DB::table('serves')
-        ->where('status','1')
-        ->where('zone_no',7)
-        ->count();
-      
-       $zone5_license = $license1 + $license2;
-      
-      
-       $generate_notice1 = DB::table('existing_serves')
-        ->where('generate_notice','1')
-        ->where('zone_no',7)
-        ->count();
-      
-      $generate_notice2 = DB::table('serves')
-          ->where('generate_notice','1')
-          ->where('zone_no',7)
-          ->count();
-      
-        $zone5_generate_notice = $generate_notice1 + $generate_notice2;
-      
-       $unpaid1 = DB::table('existing_serves')
-          ->where('paid_unpaid','unpaid')
-          ->where('zone_no',7)
-          ->count();
-      
-                          
-      $unpaid2 = DB::table('serves')
-            ->where('paid_unpaid','unpaid')
-            ->where('zone_no',7)
-              ->count();
-      $zone5_unpaid = $unpaid1 + $unpaid2;
-      
-      
-      $receipt1 = DB::table('serves')
-          ->where('paid_unpaid','paid')
-          ->where('zone_no',7)
-          ->count();
-      
-        $receipt2 = DB::table('existing_serves')
-          ->where('paid_unpaid','paid')
-          ->where('zone_no',7)
-          ->count();
-      
-          $zone5_receipt = $receipt1 + $receipt2;
-
-          $todays_receipt1 = DB::table('serves')
-          ->where('paid_unpaid','paid')
-          ->whereRaw('Date(date) = CURDATE()')
-          ->where('zone_no',7)
-          ->count();
-
-          $todays_receipt2 = DB::table('existing_serves')
-          ->where('paid_unpaid','paid')
-          ->whereRaw('Date(date) = CURDATE()')
-          ->where('zone_no',7)
-          ->count();
-
-       $zone5_todays_receipt = $todays_receipt1 + $todays_receipt2;
-	
-	$todays_payment1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',7)
-		->sum('pay_amount');
-
-    $todays_payment2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',7)
-		->sum('pay_amount');
-
-    $zone5_payment_receipt = $todays_payment1 + $todays_payment2;
-
-          $payment1 = DB::table('serves')
-    ->where('zone_no',7)
-		->sum('pay_amount');
-
-	 $payment2 = DB::table('existing_serves')
-    ->where('zone_no',7)
-		->sum('pay_amount');
-
-    $zone5_payment = $payment1 + $payment2;
-
-    $today1 = DB::table('serves')->select(DB::raw('*'))
-    ->whereRaw('Date(created_at) = CURDATE()')
-    ->where('zone_no',7)
-    ->count();
-
-$today2 = DB::table('existing_serves')->select(DB::raw('*'))
-    ->whereRaw('Date(created_at) = CURDATE()')
-    ->where('zone_no',7)
-    ->count();
-
-    $zone5_today = $today1 + $today2;
-
-    //zone 6
-
-    $demand1 = DB::table('serves')
-    ->join('bussiness_types','bussiness_types.id','=','serves.type_of_bussiness_id')
-    ->where('zone_no',8)
-    ->sum('bussiness_types.charges');
-    
-  
-  $demand2 = DB::table('existing_serves')
-  ->join('bussiness_types','bussiness_types.id','=','existing_serves.type_of_bussiness_id')
-    ->where('zone_no',8)
-    ->sum('bussiness_types.charges');
-  
-     $zone6_demand = $demand1 + $demand2;
-
-    $survey6 = DB::table('existing_serves')
-    ->where('zone_no',8)
-    ->count();
-
-          $application1 = DB::table('existing_serves')
-          ->where('zone_no',8)
-          ->count();
-        
-          $application2 = DB::table('serves')
-          ->where('zone_no',8)
-          ->count();
-        
-          $zone6_application = $application1 + $application2;
-        
-          $license1 = DB::table('existing_serves')
-          ->where('status','1')
-          ->where('zone_no',8)
-          ->count();
-        
-          $license2 = DB::table('serves')
-          ->where('status','1')
-          ->where('zone_no',8)
-          ->count();
-        
-         $zone6_license = $license1 + $license2;
-        
-        
-         $generate_notice1 = DB::table('existing_serves')
-          ->where('generate_notice','1')
-          ->where('zone_no',8)
-          ->count();
-        
-        $generate_notice2 = DB::table('serves')
-            ->where('generate_notice','1')
-            ->where('zone_no',8)
-            ->count();
-        
-          $zone6_generate_notice = $generate_notice1 + $generate_notice2;
-        
-         $unpaid1 = DB::table('existing_serves')
-            ->where('paid_unpaid','unpaid')
-            ->where('zone_no',8)
-            ->count();
-        
-                            
-        $unpaid2 = DB::table('serves')
-              ->where('paid_unpaid','unpaid')
-              ->where('zone_no',8)
-                ->count();
-        $zone6_unpaid = $unpaid1 + $unpaid2;
-        
-        
-        $receipt1 = DB::table('serves')
-            ->where('paid_unpaid','paid')
-            ->where('zone_no',8)
-            ->count();
-        
-          $receipt2 = DB::table('existing_serves')
-            ->where('paid_unpaid','paid')
-            ->where('zone_no',8)
-            ->count();
-        
-            $zone6_receipt = $receipt1 + $receipt2;
-            $todays_receipt1 = DB::table('serves')
-            ->where('paid_unpaid','paid')
-            ->whereRaw('Date(date) = CURDATE()')
-            ->where('zone_no',8)
-            ->count();
-        
-            $todays_receipt2 = DB::table('existing_serves')
-            ->where('paid_unpaid','paid')
-            ->whereRaw('Date(date) = CURDATE()')
-            ->where('zone_no',8)
-            ->count();
-        
-            $zone6_todays_receipt = $todays_receipt1 + $todays_receipt2;
-	
-	$todays_payment1 = DB::table('serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',8)
-		->sum('pay_amount');
-
-    $todays_payment2 = DB::table('existing_serves')
-		->where('paid_unpaid','paid')
-    ->whereRaw('Date(date) = CURDATE()')
-    ->where('zone_no',8)
-		->sum('pay_amount');
-
-    $zone6_payment_receipt = $todays_payment1 + $todays_payment2;
-
-
-            $payment1 = DB::table('serves')
-             ->where('zone_no',8)
-		         ->sum('pay_amount');
-
-	           $payment2 = DB::table('existing_serves')
-              ->where('zone_no',8)
-		          ->sum('pay_amount');
-
-             $zone6_payment = $payment1 + $payment2;
-
-             $today1 = DB::table('serves')->select(DB::raw('*'))
-                  ->whereRaw('Date(created_at) = CURDATE()')
-                  ->where('zone_no',8)
+              // Calculate demand for 'existing_serves' table
+              $notice2 = DB::table('existing_serves')
+                  ->where('generate_notice','1')
+                  ->where('zone_no', $zone->id)
                   ->count();
 
-    $today2 = DB::table('existing_serves')->select(DB::raw('*'))
-                  ->whereRaw('Date(created_at) = CURDATE()')
-                  ->where('zone_no',8)
+              // Store the total demand for the current zone
+              $noticeData[$zone->zone] = $notice1 + $notice2;
+          }
+
+          $receiptData = []; 
+          foreach ($zones as $zone) {
+              // Calculate demand for 'serves' table
+              $receipt1 = DB::table('serves')
+                  ->where('paid_unpaid','paid')
+                  ->where('zone_no', $zone->id)
                   ->count();
 
-            $zone6_today = $today1 + $today2;
+              // Calculate demand for 'existing_serves' table
+              $receipt2 = DB::table('existing_serves')
+                  ->where('paid_unpaid','paid')
+                  ->where('zone_no', $zone->id)
+                  ->count();
 
-    return view('admin_panel.dashboard',compact('zone1_generate_notice','zone1_license','zone1_unpaid','zone1_receipt','zone1_application','zone1_payment','zone1_today','zone2_generate_notice','zone2_license','zone2_unpaid','zone2_receipt','zone2_application','zone2_payment','zone2_today','zone3_generate_notice','zone3_license','zone3_unpaid','zone3_receipt','zone3_application','zone3_payment','zone3_today','zone4_generate_notice','zone4_license','zone4_unpaid','zone4_receipt','zone4_application','zone4_payment','zone4_today','zone5_generate_notice','zone5_license','zone5_unpaid','zone5_receipt','zone5_application','zone5_payment','zone5_today','zone6_generate_notice','zone6_license','zone6_unpaid','zone6_receipt','zone6_application','zone6_payment','zone6_today','survey6','survey5','survey4','survey3','survey2','survey1','zone1_todays_receipt','zone2_todays_receipt','zone3_todays_receipt','zone4_todays_receipt','zone5_todays_receipt','zone6_todays_receipt','zone1_payment_receipt','zone2_payment_receipt','zone3_payment_receipt','zone4_payment_receipt','zone5_payment_receipt','zone6_payment_receipt','zone1_demand','zone2_demand','zone3_demand','zone4_demand','zone5_demand','zone6_demand'));
+              // Store the total demand for the current zone
+              $receiptData[$zone->zone] = $receipt1 + $receipt2;
+          }
+          
+          
+          $licenseData = []; 
+          foreach ($zones as $zone) {
+              // Calculate demand for 'serves' table
+              $license1 = DB::table('serves')
+                  ->where('status','1')
+                  ->where('zone_no', $zone->id)
+                  ->count();
+
+              // Calculate demand for 'existing_serves' table
+              $license2 = DB::table('existing_serves')
+                  ->where('status','1')
+                  ->where('zone_no', $zone->id)
+                  ->count();
+
+              // Store the total demand for the current zone
+              $licenseData[$zone->zone] = $license1 + $license2;
+          }
+
+          
+          $todays_receiptData = []; 
+          foreach ($zones as $zone) {
+              // Calculate demand for 'serves' table
+              $todays_receipt1 = DB::table('serves')
+                  ->where('paid_unpaid','paid')
+                  ->whereRaw('Date(date) = CURDATE()')
+                  ->where('zone_no', $zone->id)
+                  ->count();
+
+              // Calculate demand for 'existing_serves' table
+              $todays_receipt2 = DB::table('existing_serves')
+                  ->where('paid_unpaid','paid')
+                  ->whereRaw('Date(date) = CURDATE()')
+                  ->where('zone_no', $zone->id)
+                  ->count();
+
+              // Store the total demand for the current zone
+              $todays_receiptData[$zone->zone] = $todays_receipt1 + $todays_receipt2;
+          }
+
+          
+          $todays_trade_feeData = []; 
+          foreach ($zones as $zone) {
+              // Calculate demand for 'serves' table
+              $todays_trade_fee1 = DB::table('serves')
+              ->where('paid_unpaid','paid')
+              ->whereRaw('Date(date) = CURDATE()')
+              ->where('zone_no', $zone->id)
+              ->sum('pay_amount');
+              
+              // Calculate demand for 'existing_serves' table
+              $todays_trade_fee2 = DB::table('existing_serves')
+              ->where('paid_unpaid','paid')
+              ->whereRaw('Date(date) = CURDATE()')
+              ->where('zone_no', $zone->id)
+              ->sum('pay_amount');
+
+              // Store the total demand for the current zone
+              $todays_trade_feeData[$zone->zone] = $todays_trade_fee1 + $todays_trade_fee2;
+          }
+
+          $total_trade_feeData = []; 
+          foreach ($zones as $zone) {
+              // Calculate demand for 'serves' table
+              $total_trade_fee1 = DB::table('serves')
+              ->where('zone_no', $zone->id)
+              ->sum('pay_amount');
+              
+              // Calculate demand for 'existing_serves' table
+              $total_trade_fee2 = DB::table('existing_serves')
+              ->where('zone_no', $zone->id)
+              ->sum('pay_amount');
+
+              // Store the total demand for the current zone
+              $total_trade_feeData[$zone->zone] = $total_trade_fee1 + $total_trade_fee2;
+          }
+         
+
+    return view('admin_panel.dashboard',compact('demandData','zones','applicationData','noticeData','receiptData','licenseData','todays_receiptData','todays_trade_feeData','total_trade_feeData'));
 }
+
 
 
 
@@ -1520,6 +884,7 @@ $zone_id=NULL;
  if($request->zone != 'all'){
   $serve_all1 = $serve_all1->when($request->zone, function ($q) use($request) {
   return $q-> where('zone_no',$request->zone);
+  // dd($request->zone);
   });
 }
 
@@ -1550,6 +915,7 @@ $data = DB::table('existing_serves')->select('*');
     }
     $data = $data->when($role == '1', function ($q)  use ($zone_id) {
         return $q->where('zone_no',$zone_id);
+  
       })
       ->where('paid_unpaid','paid')
       ->orWhere('paid_unpaid02','paid')
@@ -1561,8 +927,40 @@ $data = DB::table('existing_serves')->select('*');
 
     $data = $data->orderby('date', 'desc')->get();
 
-  // echo json_encode($serve_all);
-      // exit();
+
+// $data = DB::table('existing_serves')
+//     ->select('*')
+//     ->when($request->zone !== 'all', function ($query) use ($request, $role, $zone_id) {
+//         // Apply zone filter only if it is not 'all'
+//         if ($role == '1') {
+//             // Apply role-based filter for specific zone_id if zone is not 'all'
+//             return $query->where('zone_no', $zone_id);
+//         } else {
+//             return $query->where('zone_no', $request->zone);
+//         }
+//     })
+//     ->where(function ($query) {
+//         // Check for any of the 'paid' statuses
+//         $query->where('paid_unpaid', 'paid')
+//               ->orWhere('paid_unpaid02', 'paid')
+//               ->orWhere('paid_unpaid03', 'paid');
+//     })
+//     ->join('zone', 'zone.id', '=', 'existing_serves.zone_no')
+//     ->leftJoin('bussiness_types', 'bussiness_types.id', '=', 'existing_serves.type_of_bussiness_id')
+//     ->leftJoin('hotel_charges', 'hotel_charges.hotel_id', '=', 'existing_serves.type_of_bussiness_id')
+//     ->select(
+//         'existing_serves.*',
+//         'bussiness_types.charges',
+//         'hotel_charges.non_ac_room as Non_AC',
+//         'hotel_charges.ac_room as AC',
+//         'bussiness_types.bussiness_type',
+//         'zone.zone'
+//     )
+//     ->orderBy('date', 'desc')
+//     ->get();
+
+
+
       return view('admin_panel.receipt',compact('serve_all1','data','zone'));
 }
 
